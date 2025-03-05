@@ -13,7 +13,7 @@ function App() {
   const generateSprintName = async () => {
     const response = await fetch(`http://localhost:3000/generate?date=${date}`);
     const data = await response.json();
-    setSprintName(`${data.sprint_letter}: ${data.sprint_name}`);
+    setSprintName(`Sprint: ${data.sprint_name}`);
   };
 
   // Auto-generate on page load
@@ -29,14 +29,15 @@ function App() {
             Sprint Name Generator
           </Typography>
           <TextField
-            label="Date (YYYY-MM-DD)"
+            label="Select Date"
+            type="date"
             value={date}
             onChange={(e) => {
               setDate(e.target.value);
               generateSprintName(); // Auto-update on date change
             }}
             fullWidth
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, "& input": { cursor: "pointer" } }} // Pointer cursor for better UX
           />
           <Button variant="contained" onClick={generateSprintName}>
             Generate
