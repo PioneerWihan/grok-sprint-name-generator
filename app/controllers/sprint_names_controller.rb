@@ -1,4 +1,35 @@
 # app/controllers/sprint_names_controller.rb
+
+# Define a hash of fun, thematic words for each letter
+WORD_LIST = {
+  "A" => [ "Astro", "Axiom", "Alpaca", "Aurora" ],
+  "B" => [ "Blitz", "Bazooka", "Bison", "Byte" ],
+  "C" => [ "Cosmo", "Cobra", "Cipher", "Crux" ],
+  "D" => [ "Drift", "Dynamo", "Dragon", "Delta" ],
+  "E" => [ "Echo", "Ember", "Eagle", "Enigma" ],
+  "F" => [ "Flux", "Falcon", "Flicker", "Forge" ],
+  "G" => [ "Gizmo", "Glitch", "Gopher", "Gravity" ],
+  "H" => [ "Halo", "Hawk", "Hex", "Hyper" ],
+  "I" => [ "Ion", "Igloo", "Iris", "Impact" ],
+  "J" => [ "Jolt", "Jaguar", "Jinx", "Jupiter" ],
+  "K" => [ "Karma", "Kestrel", "Kernel", "Kilo" ],
+  "L" => [ "Lunar", "Lynx", "Laser", "Lift" ],
+  "M" => [ "Mystic", "Maverick", "Matrix", "Meteor" ],
+  "N" => [ "Nexus", "Nomad", "Neon", "Nova" ],
+  "O" => [ "Orbit", "Onyx", "Ogre", "Omega" ],
+  "P" => [ "Pulse", "Panther", "Pixel", "Phantom" ],
+  "Q" => [ "Quark", "Quest", "Quartz", "Quip" ],
+  "R" => [ "Radar", "Rogue", "Raven", "Rush" ],
+  "S" => [ "Spark", "Sphinx", "Sonic", "Sprint" ], # Nod to the project!
+  "T" => [ "Turbo", "Titan", "Tracer", "Twist" ],
+  "U" => [ "Ultra", "Umbra", "Unity", "Uplink" ],
+  "V" => [ "Vortex", "Viper", "Vector", "Vibe" ],
+  "W" => [ "Wave", "Wraith", "Whiz", "Warp" ],
+  "X" => [ "Xeno", "Xray", "Xylem", "Xenon" ],
+  "Y" => [ "Yeti", "Yield", "Yarn", "Yolo" ],
+  "Z" => [ "Zen", "Zephyr", "Zigzag", "Zoom" ]
+}.freeze # Freeze to prevent accidental modification
+
 class SprintNamesController < ApplicationController
   def generate
     current_date = Date.parse(params[:date] || Date.today.to_s)
@@ -13,34 +44,12 @@ class SprintNamesController < ApplicationController
     start_date = Date.new(2025, 1, 1)
     days_since_start = (date - start_date).to_i
     sprint_number = (days_since_start / 14) + 1
-    ("A".."Z").to_a[sprint_number - 1] || "Z" # Cap at Z
+    ("A".."Z").to_a[[ sprint_number - 1, 25 ].min] # Cap at Z (index 25)
   end
 
   def generate_sprint_name(letter)
-    attempts = 0
-    max_attempts = 1000
-
-    # List of Faker categories to randomly choose from
-    # Call the selected Faker method
-    faker_categories = [
-      Faker::Company.buzzword,          # e.g., "Synergy"
-      Faker::Games::Pokemon.name,       # e.g., "Pikachu"
-      Faker::Movie.title,               # e.g., "The Matrix"
-      Faker::Space.planet,              # e.g., "Mars"
-      Faker::Food.dish,                 # e.g., "Pizza"
-      Faker::Superhero.name,            # e.g., "Captain Planet"
-      Faker::Creature::Animal.name      # e.g., "Penguin"
-    ]
-
-    loop do
-      name = faker_categories.sample
-
-      return "#{name.capitalize}" if name.downcase.start_with?(letter.downcase)
-
-      attempts += 1
-      if attempts >= max_attempts
-        return "#{letter.downcase}" # Fallback
-      end
-    end
+    letter = letter.upcase
+    words = WORD_LIST[letter]
+    words.sample.capitalize
   end
 end
