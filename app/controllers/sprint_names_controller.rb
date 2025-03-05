@@ -39,7 +39,7 @@ class SprintNamesController < ApplicationController
 
       attempts += 1
       if attempts >= max_attempts
-        return "Sprint-#{letter.downcase}" # Fallback
+        return "#{letter.downcase}" # Fallback
       end
     end
   end
