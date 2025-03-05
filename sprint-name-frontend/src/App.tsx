@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, TextField, Typography, Container, Box } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
@@ -7,18 +7,19 @@ const theme = createTheme({
 });
 
 function App() {
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Default to today
   const [sprintName, setSprintName] = useState("");
 
   const generateSprintName = async () => {
-    const response = await fetch(
-      `http://localhost:3000/generate?date=${
-        date || new Date().toISOString().split("T")[0]
-      }`
-    );
+    const response = await fetch(`http://localhost:3000/generate?date=${date}`);
     const data = await response.json();
     setSprintName(`${data.sprint_letter}: ${data.sprint_name}`);
   };
+
+  // Auto-generate on page load
+  useEffect(() => {
+    generateSprintName();
+  }, []); // Empty dependency array means it runs once on mount
 
   return (
     <ThemeProvider theme={theme}>
@@ -30,7 +31,10 @@ function App() {
           <TextField
             label="Date (YYYY-MM-DD)"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => {
+              setDate(e.target.value);
+              generateSprintName(); // Auto-update on date change
+            }}
             fullWidth
             sx={{ mb: 2 }}
           />

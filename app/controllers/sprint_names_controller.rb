@@ -18,16 +18,28 @@ class SprintNamesController < ApplicationController
 
   def generate_sprint_name(letter)
     attempts = 0
-    max_attempts = 50
+    max_attempts = 1000
 
-    # Use Faker to generate a name starting with the given letter
+    # List of Faker categories to randomly choose from
+    # Call the selected Faker method
+    faker_categories = [
+      Faker::Company.buzzword,          # e.g., "Synergy"
+      Faker::Games::Pokemon.name,       # e.g., "Pikachu"
+      Faker::Movie.title,               # e.g., "The Matrix"
+      Faker::Space.planet,              # e.g., "Mars"
+      Faker::Food.dish,                 # e.g., "Pizza"
+      Faker::Superhero.name,            # e.g., "Captain Planet"
+      Faker::Creature::Animal.name      # e.g., "Penguin"
+    ]
+
     loop do
-      name = Faker::Company.buzzword # Or another Faker category
-      return "#{name.capitalize}" if name.start_with?(letter)
+      name = faker_categories.sample
+
+      return "#{name.capitalize}" if name.downcase.start_with?(letter.downcase)
 
       attempts += 1
       if attempts >= max_attempts
-        return "Sprint-#{letter.downcase}" # Fallback when no match found
+        return "Sprint-#{letter.downcase}" # Fallback
       end
     end
   end
