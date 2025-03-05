@@ -19,17 +19,15 @@ class SprintNamesController < ApplicationController
   end
 
   def generate_sprint_names(letter, inspiration)
-    # Datamuse query: words starting with `letter`, related to `inspiration`
-    url = "https://api.datamuse.com/words?sp=#{letter}*&rel_jja=#{inspiration}&max=100"
+    url = "https://api.datamuse.com/words?sp=#{letter}*&rel_trg=#{inspiration}&max=10"
     response = HTTParty.get(url)
     words = response.parsed_response
 
     if words.any?
-      srand(letter.ord) # Seed for consistent results per letter
-      random = Random.new
+      seed = letter.ord
+      random = Random.new(seed)
       words.sample(5, random: random).map { |w| w["word"].capitalize }
     else
-      # Fallback if API fails or no results
       5.times.map { "Sprint-#{letter.downcase}-#{rand(100)}" }
     end
   end
