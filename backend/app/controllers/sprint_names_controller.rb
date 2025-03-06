@@ -16,7 +16,8 @@ class SprintNamesController < ApplicationController
     words = response.parsed_response
 
     if words.any?
-      words.take(5).map { |w| w["word"].capitalize }
+      random = Random.new
+      words.sample(5, random: random).map { |w| w["word"].capitalize }
     else
       5.times.map { "Sprint-#{letter.downcase}-#{rand(100)}" }
     end

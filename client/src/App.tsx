@@ -54,6 +54,19 @@ function App() {
     generateSprintNames();
   }, []);
 
+  // Get window dimensions for centered confetti
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <Container
@@ -66,7 +79,24 @@ function App() {
           overflow: "hidden",
         }}
       >
-        {showConfetti && <Confetti />}
+        {showConfetti && (
+          <Confetti
+            width={windowWidth}
+            height={windowHeight}
+            numberOfPieces={150}
+            recycle={false} // Stop after one burst
+            gravity={0.2} // Heavier fall
+            initialVelocityX={{ min: -10, max: 10 }} // Spread horizontally
+            initialVelocityY={{ min: -20, max: -10 }} // Burst upward from center
+            confettiSource={{
+              x: windowWidth / 2, // Center horizontally
+              y: windowHeight / 2, // Center vertically
+              w: 10,
+              h: 10,
+            }}
+            onConfettiComplete={() => setShowConfetti(false)}
+          />
+        )}
         <Box
           sx={{
             background: "rgba(255, 255, 255, 0.9)",
@@ -133,7 +163,7 @@ function App() {
           </FormControl>
 
           <TextField
-            label="Inspiration (e.g., 'Fun at the Carnival, 'Tourist Cities')"
+            label="Inspiration (e.g., 'Fun at the Carnival', 'Tourist Cities')"
             value={inspiration}
             onChange={(e) => setInspiration(e.target.value)}
             fullWidth
