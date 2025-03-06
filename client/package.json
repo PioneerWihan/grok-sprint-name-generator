@@ -23,6 +23,7 @@
     "@biomejs/biome": "^1.9.4",
     "@rsbuild/core": "^1.2.14",
     "@rsbuild/plugin-react": "^1.1.1",
+    "@rsbuild/plugin-type-check": "^1.2.1",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "typescript": "^5.8.2"
