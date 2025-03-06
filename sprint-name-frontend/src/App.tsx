@@ -133,7 +133,7 @@ function App() {
           </FormControl>
 
           <TextField
-            label="Inspiration (e.g., 'tech', 'nature')"
+            label="Inspiration (e.g., 'Fun at the Carnival, 'Tourist Cities')"
             value={inspiration}
             onChange={(e) => setInspiration(e.target.value)}
             fullWidth
