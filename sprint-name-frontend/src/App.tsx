@@ -107,7 +107,6 @@ function App() {
               label="Pick Your Letter!"
               onChange={(e) => {
                 setLetter(e.target.value as string);
-                generateSprintNames();
               }}
               sx={{
                 fontSize: "1.5rem",
