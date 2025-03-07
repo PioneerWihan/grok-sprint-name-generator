@@ -5,24 +5,22 @@ import { motion } from "framer-motion";
 import { LetterSelector } from "./LetterSelector";
 import { InspirationInput } from "./InspirationInput";
 import { GenerateButton } from "./GenerateButton";
-import SprintNamesList from "./SprintNamesList";
+import SprintNamesList from "./SprintNamesList"; // Default import
 import { ConfettiEffect } from "./ConfettiEffect";
 import { createConsumer } from "@rails/actioncable";
-import { v4 as uuidv4 } from "uuid"; // npm install uuid
-
+import { v4 as uuidv4 } from "uuid";
 import theme from "./theme";
 
 function App() {
   const [clientId] = useState(uuidv4());
   const [letter, setLetter] = useState("A");
-  const [inspiration, setInspiration] = useState("");
   const [sprintNames, setSprintNames] = useState<string[]>([]);
   const [votes, setVotes] = useState<Record<string, number>>({});
-
   const [showConfetti, setShowConfetti] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [clientVoteCount, setClientVoteCount] = useState(0); // Track local votes
 
-  const cable = createConsumer("ws://localhost:3000/cable"); // Adjust URL as needed
+  const cable = createConsumer("ws://localhost:3000/cable");
 
   useEffect(() => {
     cable.subscriptions.create("SprintChannel", {
@@ -38,16 +36,7 @@ function App() {
     });
   }, []);
 
-  // Track mouse movement for dynamic background
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  const generateSprintNames = async () => {
+  const generateNames = async () => {
     const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,17 +45,31 @@ function App() {
     const data = await response.json();
     setLetter(data.letter);
     setSprintNames(data.sprint_names);
-    setVotes(data.votes); // Votes reset to 0
+    setVotes(data.votes);
+    setClientVoteCount(0); // Reset vote count when generating new names
     setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 3000);
   };
 
-  // Auto-generate on load
+  const voteForName = async (name: string) => {
+    if (clientVoteCount < 3) {
+      await fetch("http://localhost:3000/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, client_id: clientId }),
+      });
+      setClientVoteCount((prev) => prev + 1);
+    }
+  };
+
+  // Mouse position and window size logic remains unchanged
   useEffect(() => {
-    generateSprintNames();
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // Get window dimensions for centered confetti
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
 
@@ -78,14 +81,6 @@ function App() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  const voteForName = async (name: string) => {
-    await fetch("http://localhost:3000/vote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, client_id: clientId }),
-    });
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -99,13 +94,12 @@ function App() {
           overflow: "hidden",
         }}
       >
-        {showConfetti && (
-          <ConfettiEffect
-            show={showConfetti}
-            windowWidth={windowWidth}
-            windowHeight={windowHeight}
-          />
-        )}
+        <ConfettiEffect
+          show={showConfetti}
+          windowWidth={windowWidth}
+          windowHeight={windowHeight}
+          onComplete={() => setShowConfetti(false)}
+        />
         <Box
           sx={{
             background: "rgba(255, 255, 255, 0.9)",
@@ -134,21 +128,20 @@ function App() {
               color="textSecondary"
               sx={{ mb: 3 }}
             >
-              Step right up and generate some fun!
+              Step right up and generate some fun! Votes left:{" "}
+              {3 - clientVoteCount}
             </Typography>
           </motion.div>
-
           <LetterSelector letter={letter} setLetter={setLetter} />
-          <InspirationInput
-            inspiration={inspiration}
-            setInspiration={setInspiration}
-          />
-          <GenerateButton onClick={generateSprintNames} />
+          <InspirationInput inspiration="fun" setInspiration={() => {}} />{" "}
+          {/* Placeholder */}
+          <GenerateButton onClick={generateNames} />
           {sprintNames.length > 0 && (
             <SprintNamesList
               sprintNames={sprintNames}
               votes={votes}
               onVote={voteForName}
+              canVote={clientVoteCount < 3}
             />
           )}
         </Box>

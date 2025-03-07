@@ -1,13 +1,20 @@
 import { Box, Button, ListItem, ListItemText } from "@mui/material";
 import { motion } from "framer-motion";
+import { FC } from "react";
 
 interface SprintNamesListProps {
   sprintNames: string[];
   votes: Record<string, number>;
   onVote: (name: string) => void;
+  canVote: boolean; // New prop to control voting availability
 }
 
-function SprintNamesList({ sprintNames, votes, onVote }: SprintNamesListProps) {
+export const SprintNamesList: FC<SprintNamesListProps> = ({
+  sprintNames,
+  votes,
+  onVote,
+  canVote,
+}) => {
   return (
     <>
       {sprintNames.map((name, index) => (
@@ -30,14 +37,18 @@ function SprintNamesList({ sprintNames, votes, onVote }: SprintNamesListProps) {
                 ✨
               </motion.div>
             ))}
-            <Button onClick={() => onVote(name)} sx={{ ml: 2 }}>
-              Vote
+            <Button
+              onClick={() => onVote(name)}
+              sx={{ ml: 2 }}
+              disabled={!canVote}
+            >
+              👍
             </Button>
           </Box>
         </ListItem>
       ))}
     </>
   );
-}
+};
 
 export default SprintNamesList;
