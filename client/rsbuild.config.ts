@@ -9,4 +9,7 @@ export default defineConfig({
       client: "./src/index.tsx",
     },
   },
+  html: {
+    title: "Sprint Name Generator",
+  },
 });

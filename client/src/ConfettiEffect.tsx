@@ -62,7 +62,6 @@ export const ConfettiEffect: FC<ConfettiEffectProps> = ({
       width={windowWidth}
       height={windowHeight}
       numberOfPieces={150}
-      recycle={false}
       gravity={0.2}
       opacity={confettiOpacity}
       initialVelocityX={{ min: -10, max: 10 }}
