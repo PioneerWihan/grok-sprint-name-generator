@@ -5,16 +5,38 @@ import { motion } from "framer-motion";
 import { LetterSelector } from "./LetterSelector";
 import { InspirationInput } from "./InspirationInput";
 import { GenerateButton } from "./GenerateButton";
-import { SprintNamesList } from "./SprintNamesList";
+import SprintNamesList from "./SprintNamesList";
 import { ConfettiEffect } from "./ConfettiEffect";
+import { createConsumer } from "@rails/actioncable";
+import { v4 as uuidv4 } from "uuid"; // npm install uuid
+
 import theme from "./theme";
 
 function App() {
+  const [clientId] = useState(uuidv4());
   const [letter, setLetter] = useState("A");
   const [inspiration, setInspiration] = useState("");
   const [sprintNames, setSprintNames] = useState<string[]>([]);
+  const [votes, setVotes] = useState<Record<string, number>>({});
+
   const [showConfetti, setShowConfetti] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const cable = createConsumer("ws://localhost:3000/cable"); // Adjust URL as needed
+
+  useEffect(() => {
+    cable.subscriptions.create("SprintChannel", {
+      received: (data: {
+        letter: string;
+        sprint_names: string[];
+        votes: Record<string, number>;
+      }) => {
+        setLetter(data.letter);
+        setSprintNames(data.sprint_names);
+        setVotes(data.votes);
+      },
+    });
+  }, []);
 
   // Track mouse movement for dynamic background
   useEffect(() => {
@@ -26,14 +48,17 @@ function App() {
   }, []);
 
   const generateSprintNames = async () => {
-    const url = new URL("http://localhost:3000/generate");
-    url.searchParams.append("letter", letter);
-    if (inspiration) url.searchParams.append("inspiration", inspiration);
-
-    const response = await fetch(url);
+    const response = await fetch("http://localhost:3000/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ letter, inspiration: "fun" }),
+    });
     const data = await response.json();
+    setLetter(data.letter);
     setSprintNames(data.sprint_names);
+    setVotes(data.votes); // Votes reset to 0
     setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3000);
   };
 
   // Auto-generate on load
@@ -53,6 +78,14 @@ function App() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const voteForName = async (name: string) => {
+    await fetch("http://localhost:3000/vote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, client_id: clientId }),
+    });
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -112,7 +145,11 @@ function App() {
           />
           <GenerateButton onClick={generateSprintNames} />
           {sprintNames.length > 0 && (
-            <SprintNamesList sprintNames={sprintNames} />
+            <SprintNamesList
+              sprintNames={sprintNames}
+              votes={votes}
+              onVote={voteForName}
+            />
           )}
         </Box>
       </Container>
