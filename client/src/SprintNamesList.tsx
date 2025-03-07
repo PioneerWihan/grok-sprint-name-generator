@@ -27,7 +27,7 @@ function SprintNamesList({ sprintNames, votes, onVote }: SprintNamesListProps) {
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                🎳
+                ✨
               </motion.div>
             ))}
             <Button onClick={() => onVote(name)} sx={{ ml: 2 }}>
