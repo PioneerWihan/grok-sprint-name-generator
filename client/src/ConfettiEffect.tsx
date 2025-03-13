@@ -6,12 +6,14 @@ interface ConfettiEffectProps {
   show: boolean;
   windowWidth: number;
   windowHeight: number;
+  onComplete?: () => void;
 }
 
 export const ConfettiEffect: FC<ConfettiEffectProps> = ({
   show,
   windowWidth,
   windowHeight,
+  onComplete,
 }) => {
   const [confettiOpacity, setConfettiOpacity] = useState(1);
   const fadeOutIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
@@ -59,6 +61,7 @@ export const ConfettiEffect: FC<ConfettiEffectProps> = ({
         ctx.stroke();
         ctx.closePath();
       }}
+      onConfettiComplete={onComplete}
       width={windowWidth}
       height={windowHeight}
       numberOfPieces={150}
