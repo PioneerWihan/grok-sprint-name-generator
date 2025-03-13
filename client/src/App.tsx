@@ -19,6 +19,7 @@ function App() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [clientVoteCount, setClientVoteCount] = useState(0); // Track local votes
+  const [inspiration, setInspiration] = useState("fun"); // Track local votes
 
   const cable = createConsumer("ws://localhost:3000/cable");
 
@@ -40,7 +41,7 @@ function App() {
     const response = await fetch("http://localhost:3000/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ letter, inspiration: "fun" }),
+      body: JSON.stringify({ letter, inspiration: inspiration }),
     });
     const data = await response.json();
     setLetter(data.letter);
@@ -133,7 +134,10 @@ function App() {
             </Typography>
           </motion.div>
           <LetterSelector letter={letter} setLetter={setLetter} />
-          <InspirationInput inspiration="fun" setInspiration={() => {}} />{" "}
+          <InspirationInput
+            inspiration={inspiration}
+            setInspiration={setInspiration}
+          />{" "}
           {/* Placeholder */}
           <GenerateButton onClick={generateNames} />
           {sprintNames.length > 0 && (
