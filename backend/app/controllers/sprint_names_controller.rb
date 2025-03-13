@@ -11,7 +11,8 @@ class SprintNamesController < ApplicationController
   DEFAULT_STATE = {
     letter: "A",
     sprint_names: [],
-    votes: {}
+    votes: {},
+    reset: true
   }.freeze
 
   def current_state
@@ -29,7 +30,8 @@ class SprintNamesController < ApplicationController
     new_state = {
       letter: letter,
       sprint_names: sprint_names,
-      votes: votes
+      votes: votes,
+      reset: true
     }
     CACHE.write(SPRINT_STATE_KEY, new_state)
 
@@ -43,6 +45,7 @@ class SprintNamesController < ApplicationController
     current = current_state
 
     if current[:sprint_names].include?(name)
+      current[:reset] = false
       current[:votes][name] ||= 0
       current[:votes][name] += 1
       CACHE.write(SPRINT_STATE_KEY, current)

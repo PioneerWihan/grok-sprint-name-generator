@@ -26,6 +26,7 @@ function App() {
   useEffect(() => {
     cable.subscriptions.create("SprintChannel", {
       received: (data: {
+        reset: boolean;
         letter: string;
         sprint_names: string[];
         votes: Record<string, number>;
@@ -33,6 +34,9 @@ function App() {
         setLetter(data.letter);
         setSprintNames(data.sprint_names);
         setVotes(data.votes);
+        if (data.reset) {
+          setClientVoteCount(0);
+        }
       },
     });
   }, []);
