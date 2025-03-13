@@ -34,3 +34,29 @@ To run this project, you need to have the following tools installed:
    ```bash
    bun install
    ```
+
+## Running the Project
+
+### Backend
+
+1. Navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
+
+2. Start the backend server:
+   ```bash
+   rails s
+   ```
+
+### Client
+
+1. Navigate to the `client` directory:
+   ```bash
+   cd client
+   ```
+
+2. Start the client app:
+   ```bash
+   bun dev
+   ```
