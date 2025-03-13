@@ -1,24 +1,62 @@
-# README
+# Sprint Name Generator
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This project is a Sprint Name Generator that helps you create fun and unique sprint names for your projects. It provides a user-friendly interface to select a letter and add inspiration to generate creative sprint names. The project consists of a backend built with Ruby on Rails and a frontend built with React.
 
-Things you may want to cover:
+## Tools Required
 
-* Ruby version
+To run this project, you need to have the following tools installed:
 
-* System dependencies
+- Ruby 3.3.5
+- Bun 1.2.4
 
-* Configuration
+## Installation
 
-* Database creation
+### Backend
 
-* Database initialization
+1. Navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
 
-* How to run the test suite
+2. Install the backend dependencies:
+   ```bash
+   bundle install
+   ```
 
-* Services (job queues, cache servers, search engines, etc.)
+### Client
 
-* Deployment instructions
+1. Navigate to the `client` directory:
+   ```bash
+   cd client
+   ```
 
-* ...
+2. Install the client dependencies:
+   ```bash
+   bun install
+   ```
+
+## Running the Project
+
+### Backend
+
+1. Navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
+
+2. Start the backend server:
+   ```bash
+   rails s
+   ```
+
+### Client
+
+1. Navigate to the `client` directory:
+   ```bash
+   cd client
+   ```
+
+2. Start the client app:
+   ```bash
+   bun dev
+   ```
