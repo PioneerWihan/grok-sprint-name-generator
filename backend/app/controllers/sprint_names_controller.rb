@@ -12,7 +12,8 @@ class SprintNamesController < ApplicationController
     letter: "A",
     sprint_names: [],
     votes: {},
-    reset: true
+    reset: true,
+    inspiration: ""
   }.freeze
 
   def current_state
@@ -31,6 +32,7 @@ class SprintNamesController < ApplicationController
       letter: letter,
       sprint_names: sprint_names,
       votes: votes,
+      inspiration: inspiration,
       reset: true
     }
     CACHE.write(SPRINT_STATE_KEY, new_state)
