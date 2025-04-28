@@ -1,43 +1,54 @@
-import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Box, Button, ListItem, ListItemText } from "@mui/material";
 import { motion } from "framer-motion";
 import { FC } from "react";
 
 interface SprintNamesListProps {
   sprintNames: string[];
+  votes: Record<string, number>;
+  onVote: (name: string) => void;
+  canVote: boolean; // New prop to control voting availability
 }
 
-export const SprintNamesList: FC<SprintNamesListProps> = ({ sprintNames }) => {
+export const SprintNamesList: FC<SprintNamesListProps> = ({
+  sprintNames,
+  votes,
+  onVote,
+  canVote,
+}) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6, ease: "backOut" }}
-    >
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ color: "#ff6f61" }}>
-          Your Carnival Creations:
-        </Typography>
-        <List sx={{ bgcolor: "grey.100", borderRadius: 2, p: 2 }}>
-          {sprintNames.map((name, index) => (
-            <ListItem
-              key={index}
-              sx={{
-                py: 1,
-                animation: `popIn 0.5s ease ${index * 0.1}s both`,
-                "@keyframes popIn": {
-                  "0%": { transform: "scale(0)", opacity: 0 },
-                  "100%": { transform: "scale(1)", opacity: 1 },
-                },
-              }}
+    <>
+      {sprintNames.map((name, index) => (
+        <ListItem
+          key={index}
+          sx={{ py: 1, display: "flex", alignItems: "center" }}
+        >
+          <ListItemText
+            primary={name}
+            primaryTypographyProps={{ fontSize: "1.3rem" }}
+          />
+          <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
+            {[...Array(votes[name] || 0)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                ✨
+              </motion.div>
+            ))}
+            <Button
+              onClick={() => onVote(name)}
+              sx={{ ml: 2 }}
+              disabled={!canVote}
             >
-              <ListItemText
-                primary={name}
-                primaryTypographyProps={{ fontSize: "1.3rem" }}
-              />
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </motion.div>
+              👍
+            </Button>
+          </Box>
+        </ListItem>
+      ))}
+    </>
   );
 };
+
+export default SprintNamesList;

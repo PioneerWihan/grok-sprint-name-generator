@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [pluginReact(), pluginTypeCheck()],
   source: {
     entry: {
-      client: "./src/index.tsx",
+      index: "./src/index.tsx",
     },
   },
   html: {
